@@ -83,7 +83,7 @@ def convert_mth_strings ( mth_string ):
 
 #### VARIABLES 1.0
 
-entity_id = "E4701_BCC_gov"
+entity_id = "E1634_GCC_gov"
 url = "http://www.gloucester.gov.uk/council/performance-and-spending/budget-and-finance/Pages/Open-Data.aspx"
 errors = 0
 data = []
