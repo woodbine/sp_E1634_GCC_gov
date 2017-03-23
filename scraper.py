@@ -9,7 +9,8 @@ import urllib2
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-#### FUNCTIONS 1.0
+#### FUNCTIONS 1.1
+import requests    #import requests for validating urls
 
 def validateFilename(filename):
     filenameregex = '^[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[0-9][0-9][0-9][0-9]_[0-9QY][0-9]$'
@@ -37,19 +38,19 @@ def validateFilename(filename):
 
 def validateURL(url):
     try:
-        r = urllib2.urlopen(url)
+        r = requests.get(url)
         count = 1
-        while r.getcode() == 500 and count < 4:
+        while r.status_code == 500 and count < 4:
             print ("Attempt {0} - Status code: {1}. Retrying.".format(count, r.status_code))
             count += 1
-            r = urllib2.urlopen(url)
+            r = requests.get(url)
         sourceFilename = r.headers.get('Content-Disposition')
 
         if sourceFilename:
             ext = os.path.splitext(sourceFilename)[1].replace('"', '').replace(';', '').replace(' ', '')
         else:
             ext = os.path.splitext(url)[1]
-        validURL = r.getcode() == 200
+        validURL = r.status_code == 200
         validFiletype = ext.lower() in ['.csv', '.xls', '.xlsx']
         return validURL, validFiletype
     except:
@@ -83,7 +84,7 @@ def convert_mth_strings ( mth_string ):
 
 #### VARIABLES 1.0
 
-entity_id = "E1634_GCC_gov"
+entity_id = "E4701_BCC_gov"
 url = "http://www.gloucester.gov.uk/council/performance-and-spending/budget-and-finance/Pages/Open-Data.aspx"
 errors = 0
 data = []
@@ -100,7 +101,6 @@ links = block.findAll('a', href=True)
 for link in links:
     csvfile = link.text.strip()
     if '.csv' in link['href'] or '.xlsx' in link['href'] or '.xls' in link['href']:
-        # print csvfile.split('-')
         Mth = csvfile.split('-')[-1].strip()[:3]
         csvYr = csvfile.split('-')[-1].replace(u'\u200b', '').strip()[-4:]
         url = 'http://www.gloucester.gov.uk' + link['href']
